@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>goodvibrations</title>
+</head>
+
+<body>
+<!-- was GOODVIBRATIONS.swf in the Flash plugin: now its frames, as SVG (port/goodvibrations) -->
+<div id="goodvibrations" style="width:100%;height:100%"></div>
+<script src="port/goodvibrations/frames.js"></script>
+<script src="port/flashframes.js"></script>
+<script>
+flashFrames(document.getElementById('goodvibrations'), {
+    fps: 2.296875,
+    sounds: { 1: 'port/goodvibrations/sound.wav' },
+    /* the two buttons beside the timecode: play and stop */
+    buttons: { 5: movie => movie.play(), 10: movie => movie.stop() },
+});
+</script>
+
+
+</body>
+</html>

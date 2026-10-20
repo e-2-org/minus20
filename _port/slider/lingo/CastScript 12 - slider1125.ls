@@ -1,0 +1,3 @@
+on mouseDown
+  sliderScript()
+end
