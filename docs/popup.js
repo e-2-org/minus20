@@ -15,9 +15,11 @@ function changeImages() {
 }
 
 var preloadFlag = false;
+// the site's folder, so pages in artists/ preload from the same images/
+var siteRoot = document.currentScript ? document.currentScript.src.replace(/[^\/]*$/, "") : "";
 function preloadImages() {
 if (document.images) {
-arrow_right = newImage("images/arrow_right.gif");
+arrow_right = newImage(siteRoot + "images/arrow_right.gif");
 preloadFlag = true;
 	}
 }
