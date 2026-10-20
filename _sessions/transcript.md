@@ -107,3 +107,149 @@ The pattern grows (41 tiles after half a second, 138 after 8.5) and each button 
 > *Write: _sessions/2026-10-13-summary.md and _sessions/2026-10-13-transcript.md*
 
 All seven pieces are ported in their pages, the four Flash videos are in `projects/video/`, and the summary and transcript are in `minus20/_sessions/`.
+
+---
+
+# minus20: slider fix, a slimmer site and going public - session transcript
+
+Transcript of the minus20 part of a Claude Code session on 20 October 2026. Earlier in the same session, identifier-service-docs, identifier-service and eprints-atmire-export were worked on; they aren't part of minus20. As above, tool calls are one-line notes, their output is omitted, only the date is given, and Claude's longer replies are shortened where they repeat the summary. The entrants' contact details found in the old repository's history are not reproduced.
+
+---
+
+## User - 2026-10-20
+
+I've been testing repos/minus20 and the port of slider.html has the scrollbar as in the original, but in the original the handle could only mover within the bar - in the port it can move outside the bar and over the plus and minus symbols - can you fix it?
+
+## Claude
+
+> *Bash: Read slider.js, the original Lingo and data.js; look at the track and handle bitmaps*
+
+The port uses the movie's limits exactly: `integer(W / 3.886)` and `integer(W / 1.345)`. Those only fit the seven screen widths the bitmaps were drawn for (640–1152). Any other window width uses the nearest bitmap while the limits keep scaling with the window, so on a 1400-pixel window the handle runs 180 pixels onto the − and +.
+
+> *Bash: Measure the bar's end borders in each track bitmap; check limits worked out from them against the Lingo's at the seven widths*
+
+Limits from the bitmaps match the Lingo's at all seven widths, to within a pixel.
+
+> *Edit: slider.js (a table of the bar's inside edges per bitmap, and limits() worked out from them)*
+
+> *Bash: Drag the handle past both ends at ten window widths, with the new and the old slider.js*
+
+The handle now stops at the bar's ends at every width. Before, it overran by up to 561 pixels on wide windows and stopped up to 240 short on narrow ones.
+
+## User - 2026-10-20
+
+Would converting the images to SVG make it work the same on any screen size?
+
+## Claude
+
+Not on its own: what breaks at other sizes is the limits, not the image format. The choice is between seven fixed sizes (the original, which the fix keeps working at any width) and scaling with the window. Scaling could be done by stretching the PNGs, at the cost of an uneven stipple; SVG would mean redrawing the artwork. Recommended keeping the seven bitmaps.
+
+## User - 2026-10-20
+
+OK - I didn't realise the artist made it this way - keep the bitmaps
+
+## Claude
+
+> *Write: a memory to keep original artwork in e-2-org ports*
+
+## User - 2026-10-20
+
+Can you change the build directory (docs) sp it conly contains the files referenced on the site? It looks like it contains all the submissions for the minus20K commission which are in the root of the main branch
+
+## Claude
+
+> *Bash: Survey docs/; write a crawler that follows every reference from index.html, in pages, scripts, stylesheets and strings inside the Flash and Director files*
+
+Only 89 of 1,031 files are reachable.
+
+> *Bash: Group unreached files by folder; check for absolute links to minus20.e-2.org; compare unreached files with the originals at the root*
+
+909 unreached files are identical copies of originals at the root. 31 exist only in `docs/`: the decompiled scripts, the ports README and the videos.
+
+> *Bash: Remove the 909 copies from docs/; move the 31 port-only files to _port/*
+
+> *Bash: Load all 31 pages in Chrome, served at /minus20/, and record failed requests*
+
+No failed requests and no script errors.
+
+> *Bash: Update README.md, _port/README.md and the example commands in _scripts/; check where the home page's refresh goes*
+
+`docs/` is down to 91 files (952 KB). The home page's refresh still sends visitors to the old server at minus20.e-2.org.
+
+## User - 2026-10-20
+
+Can you get rid of the ga.js script in /docs and tidy up the html a bit - they can keep quirks mode and the table layout, justremove anything no longer supported and make tags lowercase. Yes, make it all so it works in pages - I'd like to make this one live/public now I've checked through it.
+
+## Claude
+
+> *Bash: Commit the slider fix and the docs/ clean-up separately*
+
+> *Bash: Record each page's rendering mode and take screenshots; read the pages; find obsolete elements, attributes and plugin notices; check external links; find Wayback Machine captures*
+
+Found, besides the analytics: a Gostats hit counter in `timeascolor.html`, IE-only scrollbar styles, `<meta contents=…>` (no such attribute), plugin "Viewing requirements" notices, and three dead or hijacked links. `timeascolor` sets colours without a `#`, which only works in quirks mode, so doctypes stay as they are.
+
+> *Write: a tidy script (removals, link fixes, and lowercasing tag and attribute names outside scripts, styles and attribute values); Bash: run it and review the diff*
+
+> *Bash: Compare rendering modes and screenshots before and after; reload every page; test the home page's refresh*
+
+Modes are unchanged; pages are pixel-identical apart from the removed notices and `timeascolor`'s time-based colour, which still works. The home page now refreshes to `artists_projects.html` on the same site.
+
+> *Bash: Commit the tidy; check what making the repository public would expose*
+
+The history includes the entrants' submission emails with their contact details, so Claude stopped before making it public, and asked how to go ahead.
+
+## User - 2026-10-20 (answer to Claude's question)
+
+Can you copy the docs folder along with the original nine projects ONLY and other original files which were used on the website into the root of minus20_new. I'll archive the current minus20 repository and delete the remote, then replace it with the new folder
+
+## Claude
+
+> *Bash: Crawl the original site at the root for the files it used; scan everything to be copied for email and postal addresses*
+
+The original site used 66 files, including the six `.swf`/`.dcr` files its pages embedded. `minus20kj.swf` and `minus20kj.fla` weren't used by any page, so they're left out.
+
+> *Bash: Copy docs/, README.md, _scripts/, _port/, _sessions/ and the 66 originals into minus20_new; update the READMEs; scan all 195 files, including binaries, for personal data*
+
+No email or postal addresses. The new folder has no git history yet.
+
+## User - 2026-10-20
+
+That works great!
+
+## User - 2026-10-20
+
+I've already done this - it's live!
+
+## Claude
+
+> *Bash: Check the live pages respond*
+
+The pages load at https://e-2-org.github.io/minus20/, with the slider fix.
+
+## User - 2026-10-20
+
+Whi9ch is awesome by the way
+
+## User - 2026-10-20
+
+One small change - can you rename the artists_projects_<name>.html files to <name>.html and put them in an "artists" folder, and update all the links
+
+## Claude
+
+> *Bash: Find the new repository's checkout; create the artists-folder branch*
+
+> *Write: a script that rewrites every value resolving to a file in docs/ for its page's new location, then moves the pages with git mv; Bash: run it and review the diff*
+
+> *Edit: popup.js (preload the rollover image relative to itself, so it works from artists/)*
+
+> *Bash: Recrawl the site; load every page; compare screenshots of the moved pages with before*
+
+Every page loads cleanly, and the moved pages are pixel-identical to before. Committed on `artists-folder`. The old URLs will return 404 once published.
+
+## User - 2026-10-20
+
+That's much tidier - yes please - update the _sessions files before you push though
+
+## Claude
+
+> *Write: this session's summary and transcript in _sessions/*

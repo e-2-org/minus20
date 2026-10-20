@@ -74,3 +74,49 @@ These were run in Chrome (Playwright):
 - **Charcoal:** not a web font, so the fallback is a similar heavy sans serif.
 - **Sound:** browsers only play sound after a click or key press, so `GOODVIBRATIONS` may be silent until the visitor clicks.
 - **Kept:** the `.swf`/`.dcr` files.
+
+---
+
+# minus20: slider fix, a slimmer site and going public, session summary
+
+20 October 2026, working with Claude Code. The same session also worked on repositories that aren't part of minus20 (identifier-service-docs, identifier-service and eprints-atmire-export). The minus20 part of the conversation is in [transcript.md](transcript.md).
+
+## What was done
+
+1. **Slider handle limits.** In the port of `SLIDERXXX.DCR`, the handle could be dragged over the − and + ends of the bar. The movie limited the handle with `integer(W / 3.886)` and `integer(W / 1.345)`, which only fit the seven screen widths (640–1152) its bitmaps were drawn for; a browser window is usually some other width.
+   - `slider.js` now works the limits out from the bar's inside edges in each track bitmap (measured from the PNGs). Because the track moves twice as far as the handle the other way, the handle meets a bar end a third of the way to it.
+   - At the seven widths these give the movie's limits, to within a pixel.
+   - Pete asked whether SVG would help. It wouldn't change the limits problem, and the artist drew seven bitmap sizes by hand, so the bitmaps are kept.
+2. **`docs/` only holds what the site uses.** It had been a copy of the whole original site, including the open submissions (`xstuff/`, `submissions/` and the artists' folders in `projects/`).
+   - A crawler followed every reference from `index.html` (attributes, scripts, stylesheets, and strings inside the Flash and Director files).
+   - 909 unreferenced files, all identical to the originals at the root, were removed: 1,031 files (16 MB) became 91 (952 KB).
+   - The decompiled Lingo and ActionScript, the ports' README and the Flash videos, which were only in `docs/`, moved to `_port/`.
+3. **HTML tidy.**
+   - Removed the Google Analytics snippets, `timeascolor`'s Gostats hit counter (blocked on HTTPS anyway), the IE-only scrollbar colours, and the "Viewing requirements" notices for Shockwave, Flash and old browsers.
+   - Corrected `<meta contents=…>` to `content`.
+   - The home page's refresh now goes to `artists_projects.html` on this site, not to the old server at minus20.e-2.org.
+   - Dead or hijacked links (Arts Council London, Illuminations, unfolded.ch) go through the Wayback Machine.
+   - Tag and attribute names are lowercase. Doctypes are unchanged, so every page keeps its rendering mode: `timeascolor` needs quirks mode, because it sets colours without a `#`.
+4. **A new repository without personal data.** Making the old repository public would have published its whole history, which includes the entrants' submission emails with their contact details. Instead, Claude built `minus20_new` from scratch:
+   - `docs/`, `README.md`, `_scripts/`, `_port/` and `_sessions/`
+   - the 66 original files the original site used (its pages, images and the nine artworks, with the six `.swf`/`.dcr` files its pages embedded), found by crawling the original site
+   - not the open submissions, the unlinked pages, `minus20kj.swf` or `minus20kj.fla`
+   - a scan of all 195 files, including inside the binaries, found no email or postal addresses
+
+   Pete archived the old repository, replaced it with this one, and published it: https://e-2-org.github.io/minus20/
+5. **Artist pages moved.** `artists_projects_<name>.html` became `artists/<name>.html` (on the `artists-folder` branch). Every reference in the pages was rewritten for the new locations, and `popup.js` now preloads its rollover image relative to itself, so it works from `artists/`.
+
+## Checks
+
+All in headless Chrome, with the site served at `/minus20/` as on GitHub Pages:
+
+- **Slider:** dragging the handle past both ends at ten window widths (390–1920). Before, it overran the bar by up to 561 px or stopped up to 240 px short; after, it stops at the bar's ends everywhere. At 800 and 1024 it overlaps the end border by 1–2 px, as the original's limits do.
+- **Every page** loaded (the random pages several times, with all rollovers triggered): no failed requests and no script errors, after each change.
+- **Screenshots before and after the tidy:** pages are pixel-identical, except the seven where a notice was removed (only that line changed) and `timeascolor`, whose colour is the time. Rendering modes are unchanged.
+- **After the move to `artists/`:** the moved pages, `artists_projects.html`, `about.html` and `index.html` are pixel-identical to before, and the crawl still reaches every file but `.nojekyll` and `favicon.ico`.
+
+## Not certain, or not done
+
+- **Old URLs:** `artists_projects_<name>.html` now return 404. GitHub Pages can't redirect; small redirect pages could be added at the old names.
+- **favicon.ico:** kept in `docs/` though no page links to it.
+- **The old repository's history** (with the submissions) is archived, not public.
