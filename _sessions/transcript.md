@@ -253,3 +253,51 @@ That's much tidier - yes please - update the _sessions files before you push tho
 ## Claude
 
 > *Write: this session's summary and transcript in _sessions/*
+
+---
+
+# minus20: slider as SVG - session transcript
+
+The minus20 part of a Claude Code session on 3 November 2026, which worked mostly on Who Knew Whom (recorded in `e-2-org/wkw`). Tool calls are shown as one-line notes; their output is omitted.
+
+## User - 2026-11-03
+
+I also had some feedback from Nat about his piece in the minus20 repository (slider). - he'd like it to work as he intended rather than as it used to work, so the piece should start with the scrollbar scaled to the size of screen it is displaying at. Can you convert it to SVG so it can scale to any size for any monitor?
+
+## Claude
+
+> *Bash: Read slider.html, slider.js, data.js and the 20 October notes; enlarge the track and handle bitmaps and list their colours*
+
+The track and handle are simple shapes on a 4-pixel grid. The 640-wide bitmaps are the originals: the dither is an exact 16×8 tile of 4×4 dots there, while the larger sizes are scaled-up copies with rounding errors.
+
+## User - 2026-11-03
+
+Can we keep the bitmap port as well?
+
+## Claude
+
+Yes: `slider.html` stays as it is, and the SVG version is a new page, `slider-svg.html`. Nat's artist page will link to the SVG version.
+
+> *Bash: Map the 640 bitmaps' structure row by row; find where the dither's spacing slips*
+
+> *Bash: Trace both bitmaps to rectangles and a dither pattern; rasterise them in Python and compare with the PNGs pixel by pixel*
+
+The handle is identical. The track differs only where the original's dots slip by one pixel in three places, which looks like an accident of how it was drawn.
+
+> *Write: docs/projects/slider-svg.html (inline SVG in 640-pixel units, the viewBox scaled to the window, the drag from sliderScript)*
+
+> *Bash: Test in headless Chrome at five window sizes: screenshots, a 150-unit drag, both ends, letting go above and below the bar*
+
+Same behaviour at every size: the track moves twice as far as the handle the other way, and the handle stops at the bar's ends.
+
+> *Edit: docs/artists/nat.html (link to slider-svg.html); Write: the memory note about keeping original artwork, updated*
+
+Nothing committed.
+
+## User - 2026-11-03
+
+Can you update the slider notes in minus20? I've also turned on GitHub pages for all the e-2-org repositories now.
+
+## Claude
+
+> *Write: this part of the session in _sessions/summary.md and transcript.md*

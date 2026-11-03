@@ -120,3 +120,32 @@ All in headless Chrome, with the site served at `/minus20/` as on GitHub Pages:
 - **Old URLs:** `artists_projects_<name>.html` now return 404. GitHub Pages can't redirect; small redirect pages could be added at the old names.
 - **favicon.ico:** kept in `docs/` though no page links to it.
 - **The old repository's history** (with the submissions) is archived, not public.
+
+---
+
+# minus20: slider as SVG, session summary
+
+3 November 2026, working with Claude Code. The same session worked mostly on Who Knew Whom (`e-2-org/wkw`); this is the minus20 part. The transcript is in [transcript.md](transcript.md).
+
+## What was done
+
+Nat Goodden asked for *slider* to work as intended rather than as it used to: the scroll bar should start scaled to the size of the screen showing it. Pete asked for it to be converted to SVG so it scales to any screen, and to keep the bitmap port as well.
+
+1. **`docs/projects/slider-svg.html`**, a new page: the track and handle drawn as an inline SVG, traced from the 640-wide bitmaps (`track1000`, `slider1000`). The six larger sizes were scaled up from those, with rounding errors, so the 640 versions are the originals.
+   - Everything sits on a 4-pixel grid, so the drawing is a handful of rectangles plus the bar's dither as a 16×8 SVG pattern of 4×4 dots.
+   - The `viewBox` is always 640 wide, in the original screen's pixels, so the bar is scaled to the window's width: at any size the bar fills the screen, with the − and + ends just off each edge, as on a 640-pixel screen.
+   - The drag is the movie's `sliderScript`, as in the bitmap port: the track moves twice as far as the handle, the other way; the handle stops at the bar's ends (165 and 476 in 640-pixel units, the same limits as the bitmap port); moving the pointer well above or below the bar lets go.
+   - Resizing the window keeps the handle where it is.
+2. **`docs/projects/slider.html`**, the bitmap port, is unchanged and still works at its own URL.
+3. **`docs/artists/nat.html`** now links to the SVG version.
+
+## Checks
+
+- **The trace:** the SVG's shapes rasterised in Python and compared with the PNGs pixel by pixel. The handle is identical. The track is identical except in the dither: the original's dots slip by one pixel in three places (gaps of 15 or 17 instead of 16), apparently by hand, and the SVG's pattern is regular.
+- **Headless Chrome** at 640×480, 1152×768, 1920×1080, 2560×1440 and 390×844: no script errors; a 150-unit drag moves the handle 150 and the track −300; the handle stops at 165 and 476; letting go above or below the bar works.
+
+## Not certain, or not done
+
+- **Not committed.** `slider-svg.html` and the change to `nat.html` are in the working tree on `main`.
+- **Rendering:** shapes are drawn with `shape-rendering="crispEdges"` for hard pixel edges; at some window widths neighbouring dots come out a pixel different in size.
+- **Not tested** on a real phone, or in Safari or Firefox.

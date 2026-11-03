@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>slider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style type="text/css">
+body {background-color:#cc9999;border:0;margin:0}
+#slider {position:fixed;left:0;top:0;width:100%;height:100%;touch-action:none}
+#handle {cursor:default}
+</style>
+</head>
+<body bgcolor="#CC9999">
+<!--
+  slider, by Nat Goodden: SLIDERXXX.DCR (Director 6) as SVG.
+
+  The movie had a track and a handle bitmap at seven sizes, picked to suit screens 640 to 1152
+  pixels wide. Here they are drawn once, traced from the 640 versions (which the larger ones were
+  scaled up from), in that screen's pixels: the viewBox is always 640 wide, so the scroll bar is
+  scaled to the width of whatever screen or window shows it. The bitmap port is slider.html.
+-->
+<svg id="slider" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <defs>
+    <!-- the dither inside the bar: 4x4 dots in a 16x8 tile -->
+    <pattern id="dots" patternUnits="userSpaceOnUse" x="98" y="9" width="16" height="8">
+      <rect width="16" height="8" fill="#ccc"/>
+      <rect x="8" width="4" height="4" fill="#666"/>
+      <rect y="4" width="4" height="4" fill="#666"/>
+    </pattern>
+  </defs>
+  <!-- track (cast member track1000, 1190x70, registration point 595,35) -->
+  <g id="track">
+    <rect width="1190" height="70" fill="#c99"/>
+    <rect y="28" width="58" height="14" fill="#666"/>
+    <rect x="92" width="1006" height="70" fill="#000"/>
+    <rect x="98" y="9" width="997" height="56" fill="url(#dots)"/>
+    <rect x="1130" y="29" width="58" height="14" fill="#666"/>
+    <rect x="1152" y="6" width="14" height="58" fill="#666"/>
+  </g>
+  <!-- handle (cast member slider1000, 64x56, registration point 32,26) -->
+  <g id="handle">
+    <rect width="4" height="56" fill="#666"/>
+    <rect x="4" width="56" height="4" fill="#ccf"/>
+    <rect x="4" y="4" width="4" height="48" fill="#ccf"/>
+    <rect x="60" width="4" height="52" fill="#336"/>
+    <rect x="4" y="52" width="60" height="4" fill="#336"/>
+    <rect x="8" y="4" width="52" height="48" fill="#999"/>
+    <rect x="12" y="16" width="4" height="24" fill="#99c"/>
+    <rect x="16" y="16" width="4" height="24" fill="#ccf"/>
+    <rect x="20" y="16" width="4" height="24" fill="#669"/>
+    <rect x="24" y="16" width="4" height="24" fill="#ccf"/>
+    <rect x="28" y="16" width="4" height="24" fill="#669"/>
+    <rect x="32" y="16" width="4" height="24" fill="#ccf"/>
+    <rect x="36" y="16" width="4" height="24" fill="#669"/>
+    <rect x="40" y="16" width="4" height="24" fill="#ccf"/>
+    <rect x="44" y="16" width="4" height="24" fill="#669"/>
+    <rect x="48" y="16" width="4" height="24" fill="#ccf"/>
+  </g>
+</svg>
+<script>
+/*
+ * The drag is the movie's sliderScript: the handle follows the mouse along the bar, the track
+ * moves twice as far the other way, revealing its - and + ends, and moving the mouse too far
+ * above or below the bar lets go. Everything is in the 640-wide screen's pixels.
+ */
+(function () {
+    const svg = document.getElementById('slider');
+    const track = document.getElementById('track');
+    const handle = document.getElementById('handle');
+    const W = 640, M = W / 2;
+    const TRACK = { regX: 595, regY: 35, barLeft: 98, barRight: 1095 };
+    const HANDLE = { width: 64, height: 56, regX: 32, regY: 26 };
+
+    /* the handle meets a bar end a third of the way to it, as the track moves twice as far */
+    const trackLeft = 3 * M - TRACK.regX;
+    const MIN = Math.floor((trackLeft + TRACK.barLeft + HANDLE.regX) / 3);
+    const MAX = Math.floor((trackLeft + TRACK.barRight - (HANDLE.width - HANDLE.regX)) / 3);
+
+    let D, handleH = M;
+
+    function place() {
+        const v = D / 2;
+        handle.setAttribute('transform', `translate(${handleH - HANDLE.regX} ${v - HANDLE.regY})`);
+        track.setAttribute('transform', `translate(${M + 2 * (M - handleH) - TRACK.regX} ${v - TRACK.regY})`);
+    }
+
+    /* the screen's height in the same units, so the bar stays in the middle */
+    function resize() {
+        D = W * innerHeight / innerWidth;
+        svg.setAttribute('viewBox', `0 0 ${W} ${D}`);
+        place();
+    }
+
+    function mouse(ev) {
+        const p = new DOMPoint(ev.clientX, ev.clientY).matrixTransform(svg.getScreenCTM().inverse());
+        return [p.x, p.y];
+    }
+
+    handle.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        const x = mouse(e)[0] - (handleH - HANDLE.regX);
+        const move = ev => {
+            const [mouseH, mouseV] = mouse(ev);
+            handleH = Math.min(MAX, Math.max(MIN, mouseH - x + HANDLE.width / 2));
+            if (mouseV < D / 2 - HANDLE.height || mouseV > D / 2 + HANDLE.height) return up();
+            place();
+        };
+        const up = () => {
+            removeEventListener('pointermove', move);
+            removeEventListener('pointerup', up);
+            removeEventListener('pointercancel', up);
+        };
+        addEventListener('pointermove', move);
+        addEventListener('pointerup', up);
+        addEventListener('pointercancel', up);
+    });
+
+    resize();
+    addEventListener('resize', resize);
+})();
+</script>
+</body>
+</html>
